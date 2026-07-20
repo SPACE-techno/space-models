@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusCorp — Sistema de Gestão Empresarial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --bg-base: #0f1119;
+            --bg-sidebar: #161923;
+            --bg-card: #1c1f2b;
+            --bg-input: #242736;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --text-primary: #e8edf2;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #2a2d3a;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --radius: 12px;
+            --radius-lg: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; font-size:16px; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(59,130,246,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 60%, rgba(139,92,246,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 80%, rgba(236,72,153,0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius:10px; }
+        a { color:inherit; text-decoration:none; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px; background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 2rem;
+            position: fixed; top:0; left:0; bottom:0; z-index:100;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-brand {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+            font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;
+            padding: 0 0.5rem;
+        }
+        .sidebar-brand i { color: var(--accent-blue); font-size: 1.5rem; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.3rem; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0.75rem; border-radius: var(--radius);
+            color: var(--text-secondary); font-weight: 500; font-size: 0.9rem;
+            transition: all var(--transition); position: relative;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(59,130,246,0.12); color: #fff;
+        }
+        .sidebar-nav a.active::before {
+            content: ''; position: absolute; left: -4px; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 24px; background: var(--accent-blue); border-radius: 2px;
+        }
+        .sidebar-footer { margin-top: auto; }
+        .sidebar-footer a {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0.75rem; border-radius: var(--radius);
+            color: var(--text-muted); font-size: 0.85rem; transition: all var(--transition);
+        }
+        .sidebar-footer a:hover { color: #f87171; background: rgba(248,113,113,0.08); }
+
+        /* MAIN */
+        .main {
+            flex:1; margin-left:260px; padding:1.5rem 2rem;
+            transition: margin-left 0.3s ease; position: relative; z-index: 1;
+        }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 2rem; gap:1rem;
+        }
+        .topbar-search {
+            display: flex; align-items: center; gap:0.5rem;
+            background: var(--bg-input); border-radius:50px;
+            padding:0.55rem 1.2rem; flex:1; max-width:400px;
+            border:1px solid transparent; transition: border-color var(--transition);
+        }
+        .topbar-search:focus-within { border-color: var(--accent-blue); }
+        .topbar-search input {
+            background:none; border:none; outline:none;
+            color:#fff; font-family:inherit; font-size:0.9rem; width:100%;
+        }
+        .topbar-search input::placeholder { color: var(--text-muted); }
+        .topbar-actions { display:flex; align-items:center; gap:0.75rem; }
+        .topbar-actions button {
+            width:40px; height:40px; border-radius:50%; background: var(--bg-card);
+            border:1px solid var(--border); color: var(--text-secondary);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition: all var(--transition); font-size:1.1rem;
+            position: relative;
+        }
+        .topbar-actions button:hover { color:#fff; border-color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+        .notification-dot {
+            position: absolute; top: 6px; right: 6px;
+            width: 8px; height: 8px; border-radius: 50%; background: var(--accent-pink);
+        }
+        .avatar {
+            width:40px; height:40px; border-radius:50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; color:#fff; cursor:pointer;
+        }
+        .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer; }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-card); border-radius: var(--radius-lg);
+            padding: 1.5rem; border: 1px solid var(--border);
+            position: relative; overflow: hidden;
+            transition: all var(--transition); cursor: default;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: transparent; }
+        .stat-card::after {
+            content: ''; position: absolute; top:-20px; right:-20px;
+            width:80px; height:80px; border-radius:50%; opacity:0.2;
+        }
+        .stat-card.blue::after { background: var(--accent-blue); }
+        .stat-card.green::after { background: var(--accent-green); }
+        .stat-card.orange::after { background: var(--accent-orange); }
+        .stat-card.pink::after { background: var(--accent-pink); }
+        .stat-card.purple::after { background: var(--accent-purple); }
+        .stat-icon {
+            width:42px; height:42px; border-radius:12px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.2rem; margin-bottom:1rem;
+        }
+        .stat-card.blue .stat-icon { background:rgba(59,130,246,0.2); color:var(--accent-blue); }
+        .stat-card.green .stat-icon { background:rgba(16,185,129,0.2); color:var(--accent-green); }
+        .stat-card.orange .stat-icon { background:rgba(245,158,11,0.2); color:var(--accent-orange); }
+        .stat-card.pink .stat-icon { background:rgba(236,72,153,0.2); color:var(--accent-pink); }
+        .stat-card.purple .stat-icon { background:rgba(139,92,246,0.2); color:var(--accent-purple); }
+        .stat-value { font-family:'Space Grotesk', sans-serif; font-size:1.8rem; font-weight:700; margin-bottom:0.2rem; }
+        .stat-label { color:var(--text-muted); font-size:0.85rem; }
+        .stat-change { font-size:0.8rem; font-weight:600; margin-top:0.5rem; display:flex; align-items:center; gap:0.25rem; }
+        .stat-change.up { color: var(--accent-green); }
+        .stat-change.down { color: #f87171; }
+
+        /* CHARTS & TABLES */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card, .table-card, .projects-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all var(--transition);
+        }
+        .chart-card:hover, .table-card:hover, .projects-card:hover {
+            border-color: rgba(255,255,255,0.1); box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;
+        }
+        .card-header h3 { font-family:'Space Grotesk', sans-serif; font-size:1.1rem; }
+        .card-header select, .card-header button {
+            background: var(--bg-input); color: #fff; border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.3rem 0.75rem; font-family: inherit;
+            font-size: 0.8rem; cursor: pointer; outline: none;
+        }
+        canvas { width: 100%; height: 300px; display: block; }
+
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 0.75rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .badge {
+            display: inline-block; padding: 0.2rem 0.7rem; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+        }
+        .badge-active { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .badge-inactive { background: rgba(248,113,113,0.15); color: #f87171; }
+        .badge-pending { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+        .action-btns { display: flex; gap: 0.5rem; }
+        .action-btns button {
+            background: none; border: none; cursor: pointer; font-size: 1rem;
+            padding: 0.25rem; border-radius: 6px; transition: all var(--transition);
+        }
+        .action-btns .btn-edit { color: var(--accent-blue); }
+        .action-btns .btn-delete { color: #f87171; }
+        .action-btns button:hover { background: rgba(255,255,255,0.06); transform: scale(1.15); }
+
+        /* PROJECTS */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+        .project-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 1.25rem;
+            transition: all var(--transition);
+        }
+        .project-card:hover { border-color: var(--accent-purple); box-shadow: var(--shadow-sm); }
+        .project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .project-header h4 { font-family:'Space Grotesk', sans-serif; }
+        .project-status {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+        .project-status.on-track { background: var(--accent-green); }
+        .project-status.at-risk { background: var(--accent-orange); }
+        .project-status.delayed { background: #f87171; }
+        .project-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem; }
+        .project-meta { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); }
+        .project-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 200; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.35s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal {
+            background: var(--bg-card); border-radius: var(--radius-lg);
+            padding: 2rem; width: 90%; max-width: 550px;
+            box-shadow: var(--shadow-md); border: 1px solid var(--border);
+            transform: translateY(20px); transition: transform 0.35s;
+        }
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h3 { font-family:'Space Grotesk', sans-serif; }
+        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
+        .modal-close:hover { color: #f87171; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .form-group.full { grid-column: 1/-1; }
+        .form-group label {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .form-group input, .form-group select {
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.7rem 0.9rem; font-family: inherit;
+            font-size: 0.9rem; color: #fff; outline: none;
+            transition: border-color var(--transition);
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-blue); }
+        .form-group input::placeholder { color: var(--text-muted); }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.75rem 2rem; border-radius: 50px; font-weight: 600;
+            font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none;
+        }
+        .btn-primary { background: var(--accent-blue); color: #fff; width: 100%; }
+        .btn-primary:hover { background: #60a5fa; transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-input); color: #fff; border: 1px solid var(--border); }
+        .btn-secondary:hover { background: #2d3a4f; }
+
+        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.5; }
+
+        @media (max-width: 1024px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><i class="bi bi-building-fill"></i> NexusCorp</div>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="#"><i class="bi bi-people-fill"></i> Funcionários</a>
+            <a href="#"><i class="bi bi-folder-fill"></i> Projetos</a>
+            <a href="#"><i class="bi bi-cash-stack"></i> Financeiro</a>
+            <a href="#"><i class="bi bi-graph-up"></i> Relatórios</a>
+            <a href="#"><i class="bi bi-gear-fill"></i> Configurações</a>
+        </nav>
+        <div class="sidebar-footer"><a href="#"><i class="bi bi-box-arrow-right"></i> Sair</a></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="mainContent">
+        <div class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="bi bi-list"></i></button>
+            <div class="topbar-search">
+                <i class="bi bi-search" style="color:var(--text-muted);"></i>
+                <input type="text" placeholder="Buscar funcionários, projetos..." id="searchInput" />
+            </div>
+            <div class="topbar-actions">
+                <button title="Notificações"><i class="bi bi-bell-fill"></i><span class="notification-dot"></span></button>
+                <button title="Mensagens"><i class="bi bi-chat-dots-fill"></i></button>
+                <button id="btnAddEmployee" title="Adicionar Funcionário"><i class="bi bi-plus-lg"></i></button>
+                <div class="avatar" title="Admin">A</div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card blue">
+                <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+                <div class="stat-value">R$ 528.400</div>
+                <div class="stat-label">Receita (Mês)</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 18.2%</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon"><i class="bi bi-graph-down"></i></div>
+                <div class="stat-value">R$ 189.200</div>
+                <div class="stat-label">Despesas</div>
+                <div class="stat-change down"><i class="bi bi-arrow-down-short"></i> 3.5%</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="bi bi-piggy-bank-fill"></i></div>
+                <div class="stat-value">R$ 339.200</div>
+                <div class="stat-label">Lucro Líquido</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 22.8%</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-value">128</div>
+                <div class="stat-label">Funcionários</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 5 novos</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon"><i class="bi bi-folder-fill"></i></div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Projetos Ativos</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 3 iniciados</div>
+            </div>
+        </div>
+
+        <!-- CHART + PROJECTS -->
+        <div class="content-grid">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>📊 Financeiro — Receita vs Despesa</h3>
+                    <select id="chartPeriod">
+                        <option>Últimos 6 meses</option>
+                        <option>Este ano</option>
+                    </select>
+                </div>
+                <canvas id="financeChart"></canvas>
+            </div>
+            <div class="projects-card">
+                <div class="card-header">
+                    <h3>📁 Projetos em Andamento</h3>
+                </div>
+                <div class="projects-grid" id="projectsMiniGrid">
+                    <!-- Preenchido via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNCIONÁRIOS TABLE -->
+        <div class="table-card">
+            <div class="card-header">
+                <h3>👥 Funcionários</h3>
+                <div style="display:flex;gap:0.5rem;">
+                    <select id="filterDepartment" style="background:var(--bg-input);color:#fff;border:1px solid var(--border);border-radius:8px;padding:0.3rem 0.75rem;font-family:inherit;font-size:0.8rem;">
+                        <option value="todos">Todos</option>
+                        <option value="TI">TI</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Vendas">Vendas</option>
+                        <option value="RH">RH</option>
+                        <option value="Financeiro">Financeiro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>Cargo</th><th>Departamento</th><th>Salário</th><th>Status</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="employeesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Adicionar Funcionário</h3>
+                <button class="modal-close" id="modalClose"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form id="employeeForm" class="form-grid">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="empName" placeholder="Nome completo" required />
+                </div>
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" id="empRole" placeholder="Cargo" required />
+                </div>
+                <div class="form-group">
+                    <label>Departamento</label>
+                    <select id="empDepartment" required>
+                        <option value="">Selecione...</option>
+                        <option>TI</option><option>Marketing</option><option>Vendas</option>
+                        <option>RH</option><option>Financeiro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Salário (R$)</label>
+                    <input type="number" id="empSalary" placeholder="5000" required />
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="empStatus">
+                        <option value="Ativo">Ativo</option>
+                        <option value="Inativo">Inativo</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <button type="submit" class="btn btn-primary" id="btnSubmit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * NexusCorpApp — Sistema Empresarial
+         */
+        class NexusCorpApp {
+            constructor() {
+                this.sidebar = document.getElementById('sidebar');
+                this.menuToggle = document.getElementById('menuToggle');
+                this.mainContent = document.getElementById('mainContent');
+                this.employeesTableBody = document.getElementById('employeesTableBody');
+                this.modalOverlay = document.getElementById('modalOverlay');
+                this.modalTitle = document.getElementById('modalTitle');
+                this.employeeForm = document.getElementById('employeeForm');
+                this.filterDepartment = document.getElementById('filterDepartment');
+                this.searchInput = document.getElementById('searchInput');
+                this.chartCanvas = document.getElementById('financeChart');
+                this.chartPeriod = document.getElementById('chartPeriod');
+                this.projectsMiniGrid = document.getElementById('projectsMiniGrid');
+                this.ctx = this.chartCanvas?.getContext('2d') || null;
+
+                /** @type {{id:number, name:string, role:string, department:string, salary:number, status:string}[]} */
+                this.employees = [
+                    { id:1, name:'Marina Costa', role:'Desenvolvedora Sênior', department:'TI', salary:12000, status:'Ativo' },
+                    { id:2, name:'Lucas Almeida', role:'Analista de Marketing', department:'Marketing', salary:7500, status:'Ativo' },
+                    { id:3, name:'Pedro Rocha', role:'Gerente de Vendas', department:'Vendas', salary:15000, status:'Ativo' },
+                    { id:4, name:'Carla Mendes', role:'Coordenadora de RH', department:'RH', salary:9800, status:'Ativo' },
+                    { id:5, name:'Rafael Torres', role:'Analista Financeiro', department:'Financeiro', salary:8200, status:'Pendente' },
+                    { id:6, name:'Ana Beatriz', role:'UX Designer', department:'TI', salary:11000, status:'Inativo' },
+                ];
+                this.nextId = 7;
+                this.chartAnimId = 0;
+                this.chartProgress = 0;
+
+                /** @type {{name:string, status:string, deadline:string, team:string}[]} */
+                this.projects = [
+                    { name:'Portal Corporativo', status:'on-track', deadline:'30/09/2026', team:'8 pessoas' },
+                    { name:'App Mobile Vendas', status:'at-risk', deadline:'15/08/2026', team:'5 pessoas' },
+                    { name:'Migração Cloud', status:'on-track', deadline:'01/11/2026', team:'12 pessoas' },
+                    { name:'BI Dashboard', status:'delayed', deadline:'10/07/2026', team:'4 pessoas' },
+                ];
+                this.init();
+            }
+
+            init() {
+                this.bindMobileMenu();
+                this.bindModal();
+                this.bindFormSubmit();
+                this.bindFilters();
+                this.renderAll();
+                this.drawChart();
+                this.renderMiniProjects();
+            }
+
+            bindMobileMenu() {
+                this.menuToggle?.addEventListener('click', () => this.sidebar?.classList.toggle('open'));
+                this.mainContent?.addEventListener('click', () => {
+                    if (window.innerWidth <= 768 && this.sidebar?.classList.contains('open'))
+                        this.sidebar.classList.remove('open');
+                });
+                document.getElementById('sidebarNav')?.querySelectorAll('a').forEach(a => {
+                    a.addEventListener('click', () => {
+                        document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+                        a.classList.add('active');
+                        if (window.innerWidth <= 768) this.sidebar?.classList.remove('open');
+                    });
+                });
+            }
+
+            bindModal() {
+                document.getElementById('btnAddEmployee')?.addEventListener('click', () => this.openModal());
+                document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
+                this.modalOverlay?.addEventListener('click', (e) => {
+                    if (e.target === this.modalOverlay) this.closeModal();
+                });
+            }
+
+            openModal(emp = null) {
+                if (this.modalTitle) this.modalTitle.textContent = emp ? 'Editar Funcionário' : 'Adicionar Funcionário';
+                const editId = document.getElementById('editId');
+                const name = document.getElementById('empName');
+                const role = document.getElementById('empRole');
+                const dept = document.getElementById('empDepartment');
+                const salary = document.getElementById('empSalary');
+                const status = document.getElementById('empStatus');
+                if (editId) editId.value = emp ? emp.id.toString() : '';
+                if (name) name.value = emp ? emp.name : '';
+                if (role) role.value = emp ? emp.role : '';
+                if (dept) dept.value = emp ? emp.department : '';
+                if (salary) salary.value = emp ? emp.salary.toString() : '';
+                if (status) status.value = emp ? emp.status : 'Ativo';
+                this.modalOverlay?.classList.add('open');
+            }
+
+            closeModal() {
+                this.modalOverlay?.classList.remove('open');
+                this.employeeForm?.reset();
+                const editId = document.getElementById('editId');
+                if (editId) editId.value = '';
+            }
+
+            bindFormSubmit() {
+                this.employeeForm?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const id = parseInt(document.getElementById('editId')?.value || '0');
+                    const data = {
+                        name: (document.getElementById('empName')).value,
+                        role: (document.getElementById('empRole')).value,
+                        department: (document.getElementById('empDepartment')).value,
+                        salary: parseFloat((document.getElementById('empSalary')).value) || 0,
+                        status: (document.getElementById('empStatus')).value,
+                    };
+                    if (id) {
+                        const idx = this.employees.findIndex(emp => emp.id === id);
+                        if (idx >= 0) this.employees[idx] = { ...this.employees[idx], ...data };
+                    } else {
+                        this.employees.push({ id: this.nextId++, ...data });
+                    }
+                    this.closeModal();
+                    this.renderAll();
+                });
+            }
+
+            bindFilters() {
+                this.filterDepartment?.addEventListener('change', () => this.renderEmployeesTable());
+                this.searchInput?.addEventListener('input', () => this.renderEmployeesTable());
+                this.chartPeriod?.addEventListener('change', () => {
+                    this.chartProgress = 0;
+                    cancelAnimationFrame(this.chartAnimId);
+                    this.drawChart();
+                });
+            }
+
+            renderAll() {
+                this.renderEmployeesTable();
+            }
+
+            renderEmployeesTable() {
+                if (!this.employeesTableBody) return;
+                const deptFilter = this.filterDepartment?.value || 'todos';
+                const search = this.searchInput?.value?.toLowerCase() || '';
+                let filtered = this.employees;
+                if (deptFilter !== 'todos') filtered = filtered.filter(e => e.department === deptFilter);
+                if (search) filtered = filtered.filter(e => e.name.toLowerCase().includes(search) || e.role.toLowerCase().includes(search));
+
+                if (filtered.length === 0) {
+                    this.employeesTableBody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="bi bi-people"></i><p>Nenhum funcionário encontrado</p></td></tr>`;
+                    return;
+                }
+
+                const badgeClass = (s) => s === 'Ativo' ? 'badge-active' : s === 'Inativo' ? 'badge-inactive' : 'badge-pending';
+                this.employeesTableBody.innerHTML = filtered.map(e => `
+                    <tr>
+                        <td><strong>${e.name}</strong></td>
+                        <td>${e.role}</td>
+                        <td>${e.department}</td>
+                        <td>R$ ${e.salary.toLocaleString()}</td>
+                        <td><span class="badge ${badgeClass(e.status)}">${e.status}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-edit" data-action="edit" data-id="${e.id}"><i class="bi bi-pencil-fill"></i></button>
+                                <button class="btn-delete" data-action="delete" data-id="${e.id}"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                this.employeesTableBody.querySelectorAll('button[data-action]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.getAttribute('data-action');
+                        const id = parseInt(btn.getAttribute('data-id') || '0');
+                        if (action === 'edit') {
+                            const emp = this.employees.find(e => e.id === id);
+                            if (emp) this.openModal(emp);
+                        } else if (action === 'delete') {
+                            if (confirm('Deseja realmente excluir este funcionário?')) {
+                                this.employees = this.employees.filter(e => e.id !== id);
+                                this.renderAll();
+                            }
+                        }
+                    });
+                });
+            }
+
+            renderMiniProjects() {
+                if (!this.projectsMiniGrid) return;
+                const statusClass = (s) => s === 'on-track' ? 'on-track' : s === 'at-risk' ? 'at-risk' : 'delayed';
+                const statusLabel = (s) => s === 'on-track' ? 'No prazo' : s === 'at-risk' ? 'Em risco' : 'Atrasado';
+                this.projectsMiniGrid.innerHTML = this.projects.map(p => `
+                    <div class="project-card">
+                        <div class="project-header">
+                            <h4>${p.name}</h4>
+                            <div class="project-status ${statusClass(p.status)}" title="${statusLabel(p.status)}"></div>
+                        </div>
+                        <p>Entrega: ${p.deadline}</p>
+                        <div class="project-meta">
+                            <span><i class="bi bi-people-fill"></i> ${p.team}</span>
+                            <span>${statusLabel(p.status)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            drawChart() {
+                if (!this.chartCanvas || !this.ctx) return;
+                const canvas = this.chartCanvas;
+                const ctx = this.ctx;
+                const w = canvas.parentElement?.clientWidth || 700;
+                const h = 300;
+                canvas.width = w * (window.devicePixelRatio || 1);
+                canvas.height = h * (window.devicePixelRatio || 1);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+                const period = this.chartPeriod?.value || 'Últimos 6 meses';
+                let labels, receita, despesa;
+                if (period.includes('6')) {
+                    labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+                    receita = [480000, 520000, 490000, 540000, 510000, 528400];
+                    despesa = [170000, 185000, 175000, 190000, 182000, 189200];
+                } else {
+                    labels = ['2021', '2022', '2023', '2024', '2025', '2026'];
+                    receita = [4200000, 4500000, 4800000, 5100000, 5300000, 5284000];
+                    despesa = [1500000, 1600000, 1700000, 1800000, 1900000, 1892000];
+                }
+
+                const padding = { top: 20, right: 30, bottom: 35, left: 70 };
+                const chartW = w - padding.left - padding.right;
+                const chartH = h - padding.top - padding.bottom;
+                const maxVal = Math.max(...receita, ...despesa) * 1.1;
+
+                const animate = () => {
+                    this.chartProgress = Math.min(this.chartProgress + 0.025, 1);
+                    ctx.clearRect(0, 0, w, h);
+                    // Grid
+                    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                    for (let i = 0; i <= 4; i++) {
+                        const y = padding.top + (chartH / 4) * i;
+                        ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(w - padding.right, y); ctx.stroke();
+                    }
+
+                    // Linhas
+                    const drawLine = (data, color) => {
+                        ctx.beginPath();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 2.5;
+                        data.forEach((val, i) => {
+                            const x = padding.left + (chartW / (data.length - 1)) * i;
+                            const y = padding.top + chartH - (val / maxVal) * chartH * this.chartProgress;
+                            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                        });
+                        ctx.stroke();
+                        // pontos
+                        data.forEach((val, i) => {
+                            const x = padding.left + (chartW / (data.length - 1)) * i;
+                            const y = padding.top + chartH - (val / maxVal) * chartH * this.chartProgress;
+                            ctx.beginPath();
+                            ctx.arc(x, y, 4, 0, Math.PI * 2);
+                            ctx.fillStyle = color;
+                            ctx.fill();
+                        });
+                    };
+                    drawLine(receita, '#3b82f6');
+                    drawLine(despesa, '#f59e0b');
+
+                    // Labels
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.font = '10px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    labels.forEach((l, i) => {
+                        const x = padding.left + (chartW / (labels.length - 1)) * i;
+                        ctx.fillText(l, x, h - padding.bottom + 16);
+                    });
+
+                    // Legenda
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.fillRect(w - 160, 10, 12, 12);
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('Receita', w - 144, 20);
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.fillRect(w - 80, 10, 12, 12);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText('Despesa', w - 64, 20);
+
+                    if (this.chartProgress < 1) {
+                        this.chartAnimId = requestAnimationFrame(animate);
+                    }
+                };
+                cancelAnimationFrame(this.chartAnimId);
+                this.chartAnimId = requestAnimationFrame(animate);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => new NexusCorpApp());
+    </script>
+</body>
+</html>

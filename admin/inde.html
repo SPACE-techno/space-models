@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusAdmin — Painel de Controle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --bg-base: #0f1119;
+            --bg-sidebar: #161923;
+            --bg-card: #1c1f2b;
+            --bg-input: #242736;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-purple: #8b5cf6;
+            --text-primary: #e8edf2;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #2a2d3a;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --radius: 12px;
+            --radius-lg: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; font-size:16px; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius:10px; }
+        a { color:inherit; text-decoration:none; }
+
+        /* ─── SIDEBAR ─────────────────────── */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 1.4rem;
+            color: #fff;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0 0.5rem;
+        }
+        .sidebar-brand i { color: var(--accent-blue); font-size: 1.5rem; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 0.3rem; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0.75rem; border-radius: var(--radius);
+            color: var(--text-secondary); font-weight: 500; font-size: 0.9rem;
+            transition: all var(--transition); position: relative;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(59,130,246,0.12); color: #fff;
+        }
+        .sidebar-nav a.active::before {
+            content: ''; position: absolute; left: -4px; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 24px; background: var(--accent-blue); border-radius: 2px;
+        }
+        .sidebar-nav a i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .sidebar-footer { margin-top: auto; }
+        .sidebar-footer a {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0.75rem; border-radius: var(--radius);
+            color: var(--text-muted); font-size: 0.85rem; transition: all var(--transition);
+        }
+        .sidebar-footer a:hover { color: #f87171; background: rgba(248,113,113,0.08); }
+
+        /* ─── MAIN CONTENT ────────────────── */
+        .main {
+            flex: 1; margin-left: 260px;
+            padding: 1.5rem 2rem;
+            transition: margin-left 0.3s ease;
+        }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 2rem; gap: 1rem;
+        }
+        .topbar-search {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-input); border-radius: 50px;
+            padding: 0.55rem 1.2rem; flex: 1; max-width: 400px;
+            border: 1px solid transparent; transition: border-color var(--transition);
+        }
+        .topbar-search:focus-within { border-color: var(--accent-blue); }
+        .topbar-search input {
+            background: none; border: none; outline: none;
+            color: #fff; font-family: inherit; font-size: 0.9rem; width: 100%;
+        }
+        .topbar-search input::placeholder { color: var(--text-muted); }
+        .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+        .topbar-actions button {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card);
+            border: 1px solid var(--border); color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all var(--transition); font-size: 1.1rem;
+        }
+        .topbar-actions button:hover { color: #fff; border-color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; cursor: pointer;
+        }
+        .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* ─── STATS CARDS ──────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+            cursor: default;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: transparent;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+        .stat-card.blue::after { background: var(--accent-blue); }
+        .stat-card.green::after { background: var(--accent-green); }
+        .stat-card.orange::after { background: var(--accent-orange); }
+        .stat-card.pink::after { background: var(--accent-pink); }
+        .stat-card .stat-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-bottom: 1rem;
+        }
+        .stat-card.blue .stat-icon { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
+        .stat-card.green .stat-icon { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+        .stat-card.orange .stat-icon { background: rgba(245,158,11,0.2); color: var(--accent-orange); }
+        .stat-card.pink .stat-icon { background: rgba(236,72,153,0.2); color: var(--accent-pink); }
+        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+        .stat-change { font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
+        .stat-change.up { color: var(--accent-green); }
+        .stat-change.down { color: #f87171; }
+
+        /* ─── CHARTS & TABLES ──────────────── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card, .table-card, .activity-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all var(--transition);
+        }
+        .chart-card:hover, .table-card:hover, .activity-card:hover {
+            border-color: rgba(255,255,255,0.1);
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;
+        }
+        .card-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; }
+        .card-header select {
+            background: var(--bg-input); color: #fff; border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.3rem 0.75rem; font-family: inherit; font-size: 0.8rem;
+            cursor: pointer; outline: none;
+        }
+        canvas { width: 100%; height: 280px; display: block; }
+
+        /* ─── TABLE ────────────────────────── */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 0.75rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .status-badge {
+            display: inline-block; padding: 0.2rem 0.7rem; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+        }
+        .status-pago { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .status-pendente { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+        .status-cancelado { background: rgba(248,113,113,0.15); color: #f87171; }
+
+        /* ─── ACTIVITY ─────────────────────── */
+        .activity-list { display: flex; flex-direction: column; gap: 1rem; }
+        .activity-item { display: flex; align-items: flex-start; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .activity-dot {
+            width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
+        }
+        .activity-dot.blue { background: var(--accent-blue); }
+        .activity-dot.green { background: var(--accent-green); }
+        .activity-dot.orange { background: var(--accent-orange); }
+        .activity-text { flex: 1; font-size: 0.85rem; color: var(--text-secondary); }
+        .activity-text strong { color: #fff; }
+        .activity-time { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+
+        /* ─── MOBILE ───────────────────────── */
+        @media (max-width: 1024px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .topbar-search { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── SIDEBAR ────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><i class="bi bi-cpu-fill"></i> NexusAdmin</div>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="#"><i class="bi bi-cart-fill"></i> Pedidos</a>
+            <a href="#"><i class="bi bi-people-fill"></i> Clientes</a>
+            <a href="#"><i class="bi bi-box-fill"></i> Produtos</a>
+            <a href="#"><i class="bi bi-graph-up"></i> Relatórios</a>
+            <a href="#"><i class="bi bi-gear-fill"></i> Configurações</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#"><i class="bi bi-box-arrow-right"></i> Sair</a>
+        </div>
+    </aside>
+
+    <!-- ─── MAIN ───────────────────────────── -->
+    <main class="main" id="mainContent">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="bi bi-list"></i></button>
+            <div class="topbar-search">
+                <i class="bi bi-search" style="color:var(--text-muted);"></i>
+                <input type="text" placeholder="Buscar pedidos, clientes..." />
+            </div>
+            <div class="topbar-actions">
+                <button title="Notificações"><i class="bi bi-bell-fill"></i></button>
+                <button title="Mensagens"><i class="bi bi-chat-dots-fill"></i></button>
+                <div class="avatar" title="Admin">A</div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card blue">
+                <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+                <div class="stat-value">R$ 48.290</div>
+                <div class="stat-label">Receita Mensal</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 12.5%</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="bi bi-cart-check-fill"></i></div>
+                <div class="stat-value">1.842</div>
+                <div class="stat-label">Pedidos</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 8.2%</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-value">3.210</div>
+                <div class="stat-label">Clientes Ativos</div>
+                <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 5.7%</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Satisfação Média</div>
+                <div class="stat-change down"><i class="bi bi-arrow-down-short"></i> 0.3%</div>
+            </div>
+        </div>
+
+        <!-- Chart + Activity -->
+        <div class="content-grid">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h3>📊 Vendas Semanais</h3>
+                    <select id="chartPeriod">
+                        <option>Últimos 7 dias</option>
+                        <option>Últimos 30 dias</option>
+                        <option>Este ano</option>
+                    </select>
+                </div>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="activity-card">
+                <div class="card-header"><h3>🔔 Atividades Recentes</h3></div>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <div class="activity-dot blue"></div>
+                        <div class="activity-text"><strong>Novo pedido</strong> #3847 — R$ 249,90</div>
+                        <div class="activity-time">5min</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot green"></div>
+                        <div class="activity-text"><strong>Cliente cadastrado</strong> — Maria Souza</div>
+                        <div class="activity-time">12min</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot orange"></div>
+                        <div class="activity-text"><strong>Estoque baixo</strong> — Produto "Vestido Floral"</div>
+                        <div class="activity-time">1h</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot blue"></div>
+                        <div class="activity-text"><strong>Pagamento confirmado</strong> — Pedido #3845</div>
+                        <div class="activity-time">2h</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Pedidos -->
+        <div class="table-card">
+            <div class="card-header">
+                <h3>📋 Pedidos Recentes</h3>
+                <a href="#" style="color:var(--accent-blue);font-size:0.85rem;font-weight:600;">Ver todos →</a>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Pedido</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr><td>#3847</td><td>Marina Costa</td><td>20/07/2026</td><td>R$ 249,90</td><td><span class="status-badge status-pago">Pago</span></td></tr>
+                        <tr><td>#3846</td><td>Lucas Almeida</td><td>19/07/2026</td><td>R$ 189,50</td><td><span class="status-badge status-pago">Pago</span></td></tr>
+                        <tr><td>#3845</td><td>Pedro Rocha</td><td>19/07/2026</td><td>R$ 520,00</td><td><span class="status-badge status-pendente">Pendente</span></td></tr>
+                        <tr><td>#3844</td><td>Carla Mendes</td><td>18/07/2026</td><td>R$ 79,90</td><td><span class="status-badge status-cancelado">Cancelado</span></td></tr>
+                        <tr><td>#3843</td><td>Rafael Torres</td><td>18/07/2026</td><td>R$ 315,00</td><td><span class="status-badge status-pago">Pago</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /**
+         * NexusAdmin — Dashboard com tipagem JSDoc (TypeScript-ready)
+         */
+        class NexusAdmin {
+            /**
+             * @param {Object} config
+             * @param {string} config.sidebarId
+             * @param {string} config.menuToggleId
+             * @param {string} config.mainContentId
+             * @param {string} config.chartCanvasId
+             * @param {string} config.chartPeriodId
+             * @param {string} config.statsGridId
+             * @param {string} config.ordersTableBodyId
+             * @param {string} config.activityListId
+             * @param {string} config.sidebarNavId
+             */
+            constructor(config) {
+                this.sidebar = document.getElementById(config.sidebarId);
+                this.menuToggle = document.getElementById(config.menuToggleId);
+                this.mainContent = document.getElementById(config.mainContentId);
+                this.chartCanvas = document.getElementById(config.chartCanvasId);
+                this.chartPeriod = document.getElementById(config.chartPeriodId);
+                this.statsGrid = document.getElementById(config.statsGridId);
+                this.ordersTableBody = document.getElementById(config.ordersTableBodyId);
+                this.activityList = document.getElementById(config.activityListId);
+                this.sidebarNav = document.getElementById(config.sidebarNavId);
+                /** @type {CanvasRenderingContext2D | null} */
+                this.ctx = this.chartCanvas?.getContext('2d') || null;
+                this.chartAnimId = 0;
+                this.chartProgress = 0;
+                this.init();
+            }
+
+            init() {
+                this.bindMobileMenu();
+                this.bindSidebarNav();
+                this.bindChartPeriod();
+                this.drawChart();
+                this.animateStats();
+                this.bindTableRowHover();
+            }
+
+            bindMobileMenu() {
+                this.menuToggle?.addEventListener('click', () => {
+                    this.sidebar?.classList.toggle('open');
+                });
+                // Fecha sidebar ao clicar fora
+                this.mainContent?.addEventListener('click', () => {
+                    if (window.innerWidth <= 768 && this.sidebar?.classList.contains('open')) {
+                        this.sidebar.classList.remove('open');
+                    }
+                });
+            }
+
+            bindSidebarNav() {
+                this.sidebarNav?.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        this.sidebarNav?.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                        if (window.innerWidth <= 768) {
+                            this.sidebar?.classList.remove('open');
+                        }
+                    });
+                });
+            }
+
+            bindChartPeriod() {
+                this.chartPeriod?.addEventListener('change', () => {
+                    this.chartProgress = 0;
+                    cancelAnimationFrame(this.chartAnimId);
+                    this.drawChart();
+                });
+            }
+
+            /**
+             * Desenha gráfico de barras animado
+             */
+            drawChart() {
+                if (!this.chartCanvas || !this.ctx) return;
+                const canvas = this.chartCanvas;
+                const ctx = this.ctx;
+                const w = canvas.parentElement?.clientWidth || 700;
+                const h = 280;
+                canvas.width = w * (window.devicePixelRatio || 1);
+                canvas.height = h * (window.devicePixelRatio || 1);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+                ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+                const period = this.chartPeriod?.value || 'Últimos 7 dias';
+                /** @type {string[]} */
+                let labels = [];
+                /** @type {number[]} */
+                let values = [];
+                if (period.includes('7')) {
+                    labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+                    values = [4200, 3800, 5100, 4600, 5900, 7200, 6400];
+                } else if (period.includes('30')) {
+                    labels = ['Sem1', 'Sem2', 'Sem3', 'Sem4'];
+                    values = [18200, 21500, 19800, 24300];
+                } else {
+                    labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+                    values = [48000, 52000, 61000, 58000, 72000, 69000];
+                }
+
+                const padding = { top: 20, right: 30, bottom: 40, left: 60 };
+                const chartW = w - padding.left - padding.right;
+                const chartH = h - padding.top - padding.bottom;
+                const maxVal = Math.max(...values) * 1.1;
+                const barWidth = (chartW / values.length) * 0.6;
+                const gap = (chartW / values.length) * 0.4;
+
+                const animate = () => {
+                    this.chartProgress = Math.min(this.chartProgress + 0.025, 1);
+                    ctx.clearRect(0, 0, w, h);
+
+                    // Grid
+                    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i <= 4; i++) {
+                        const y = padding.top + (chartH / 4) * i;
+                        ctx.beginPath();
+                        ctx.moveTo(padding.left, y);
+                        ctx.lineTo(w - padding.right, y);
+                        ctx.stroke();
+                    }
+
+                    // Barras
+                    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981'];
+                    values.forEach((val, i) => {
+                        const x = padding.left + (chartW / values.length) * i + gap / 2;
+                        const targetH = (val / maxVal) * chartH * this.chartProgress;
+                        const y = padding.top + chartH - targetH;
+                        const grad = ctx.createLinearGradient(x, y, x, padding.top + chartH);
+                        grad.addColorStop(0, colors[i % colors.length]);
+                        grad.addColorStop(1, 'rgba(255,255,255,0.05)');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.roundRect(x, y, barWidth, targetH, [6, 6, 0, 0]);
+                        ctx.fill();
+
+                        // Label
+                        ctx.fillStyle = '#9ca3af';
+                        ctx.font = '11px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(labels[i], x + barWidth / 2, h - padding.bottom + 20);
+
+                        // Value on top
+                        if (this.chartProgress > 0.5) {
+                            const alpha = Math.min((this.chartProgress - 0.5) * 2, 1);
+                            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                            ctx.fillText(`R$ ${val.toLocaleString()}`, x + barWidth / 2, y - 8);
+                        }
+                    });
+
+                    if (this.chartProgress < 1) {
+                        this.chartAnimId = requestAnimationFrame(animate);
+                    }
+                };
+
+                cancelAnimationFrame(this.chartAnimId);
+                this.chartAnimId = requestAnimationFrame(animate);
+            }
+
+            animateStats() {
+                const statValues = this.statsGrid?.querySelectorAll('.stat-value');
+                if (!statValues) return;
+                statValues.forEach(el => {
+                    const targetText = el.textContent || '';
+                    const match = targetText.match(/[\d.,]+/);
+                    if (!match) return;
+                    const targetNum = parseFloat(match[0].replace('.', '').replace(',', '.'));
+                    if (isNaN(targetNum)) return;
+                    const prefix = targetText.startsWith('R$') ? 'R$ ' : '';
+                    const suffix = targetText.includes('%') ? '%' : '';
+                    const duration = 1500;
+                    const startTime = performance.now();
+                    const step = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = (eased * targetNum).toFixed(targetNum < 10 ? 1 : 0);
+                        el.textContent = prefix + Number(current).toLocaleString() + suffix;
+                        if (progress < 1) {
+                            requestAnimationFrame(step);
+                        } else {
+                            el.textContent = targetText;
+                        }
+                    };
+                    requestAnimationFrame(step);
+                });
+            }
+
+            bindTableRowHover() {
+                this.ordersTableBody?.querySelectorAll('tr').forEach(row => {
+                    row.addEventListener('mouseenter', () => {
+                        row.style.background = 'rgba(59,130,246,0.06)';
+                    });
+                    row.addEventListener('mouseleave', () => {
+                        row.style.background = '';
+                    });
+                });
+            }
+        }
+
+        // Polyfill roundRect
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+                const r = radii[0] || 0;
+                this.beginPath();
+                this.moveTo(x + r, y);
+                this.lineTo(x + w - r, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r);
+                this.lineTo(x + w, y + h - r);
+                this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                this.lineTo(x + r, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r);
+                this.lineTo(x, y + r);
+                this.quadraticCurveTo(x, y, x + r, y);
+                this.closePath();
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new NexusAdmin({
+                sidebarId: 'sidebar',
+                menuToggleId: 'menuToggle',
+                mainContentId: 'mainContent',
+                chartCanvasId: 'salesChart',
+                chartPeriodId: 'chartPeriod',
+                statsGridId: 'statsGrid',
+                ordersTableBodyId: 'ordersTableBody',
+                activityListId: 'activityList',
+                sidebarNavId: 'sidebarNav',
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusTech • Soluções em Tecnologia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --bg-primary: #fafbfc;
+            --bg-secondary: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --accent: #0066ff;
+            --accent-light: #3388ff;
+            --accent-dark: #0044cc;
+            --accent-glow: rgba(0, 102, 255, 0.2);
+            --cyan: #00d4ff;
+            --cyan-light: #66e5ff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #7a7a9a;
+            --border-subtle: #e2e8f0;
+            --border-accent: rgba(0, 102, 255, 0.3);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 32px rgba(0,0,0,0.06);
+            --shadow-lg: 0 16px 56px rgba(0,0,0,0.08);
+            --nav-bg: rgba(250, 251, 252, 0.9);
+            --nav-border: #e2e8f0;
+            --hero-gradient: linear-gradient(135deg, #e8f0fe 0%, #d4e4fc 100%);
+            --footer-bg: #f0f4f8;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #11161d;
+            --bg-card: #161c24;
+            --bg-card-hover: #1c2430;
+            --accent: #3399ff;
+            --accent-light: #66b3ff;
+            --accent-dark: #0066cc;
+            --accent-glow: rgba(51, 153, 255, 0.25);
+            --cyan: #00ccff;
+            --cyan-light: #66e0ff;
+            --text-primary: #e8edf2;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6a7380;
+            --border-subtle: #2a3440;
+            --border-accent: rgba(51, 153, 255, 0.3);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+            --shadow-lg: 0 16px 56px rgba(0,0,0,0.5);
+            --nav-bg: rgba(10, 14, 20, 0.9);
+            --nav-border: #2a3440;
+            --hero-gradient: linear-gradient(135deg, #0d1520 0%, #0a1018 100%);
+            --footer-bg: #0d1117;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.65;
+            overflow-x: hidden;
+            transition: background 0.4s, color 0.4s;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        ::selection { background: var(--accent); color: #fff; }
+        a { color: inherit; text-decoration: none; transition: color 0.3s; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 6rem 0; position: relative; overflow: hidden; }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .section-title em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        .section-header { text-align: center; margin-bottom: 3.5rem; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+        .btn-outline:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1.5px solid var(--text-muted);
+            color: var(--text-secondary);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0; z-index: 1000;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--nav-border);
+            transition: all 0.35s;
+        }
+        .navbar.scrolled { box-shadow: 0 4px 28px rgba(0,0,0,0.08); }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            height: 72px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 1.6rem;
+            color: var(--text-primary);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .nav-brand span { color: var(--accent); }
+        .nav-links { display: flex; gap: 0.25rem; }
+        .nav-links a {
+            padding: 0.5rem 1rem; border-radius: 8px;
+            font-size: 0.9rem; font-weight: 500; color: var(--text-secondary);
+            transition: all 0.25s;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--bg-secondary); }
+        .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+        .hamburger { display: none; flex-direction: column; gap: 4px; padding: 8px; }
+        .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
+        .mobile-menu { display: none; padding: 1rem; border-top: 1px solid var(--nav-border); flex-direction: column; gap: 0.5rem; }
+        .mobile-menu a { padding: 0.7rem; border-radius: 8px; color: var(--text-secondary); }
+        .mobile-menu.open { display: flex; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 6rem 1.5rem 4rem;
+            background: var(--hero-gradient);
+        }
+        .hero-canvas { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .hero-content { position: relative; z-index: 1; text-align: center; max-width: 800px; animation: fadeUp 1s ease 0.2s both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-card); padding: 0.5rem 1.5rem;
+            border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+            margin-bottom: 1.5rem; border: 1px solid var(--border-subtle);
+        }
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem;
+        }
+        .hero-title em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.15rem; color: var(--text-secondary);
+            max-width: 500px; margin: 0 auto 2rem;
+        }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .hero-scroll {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            color: var(--text-muted); cursor: pointer; z-index: 1;
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            transition: all 0.35s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.4s;
+        }
+        .service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+        .service-card:hover::before { transform: scaleX(1); }
+        .service-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: var(--accent-glow); color: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1.25rem;
+        }
+        .service-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem; margin-bottom: 0.75rem;
+        }
+        .service-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+
+        /* About */
+        .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .about-image img { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+        .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem; font-weight: 700; color: var(--accent);
+        }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Portfolio */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .portfolio-card {
+            background: var(--bg-card); border-radius: var(--radius-lg);
+            overflow: hidden; border: 1px solid var(--border-subtle);
+            transition: all 0.35s; box-shadow: var(--shadow-sm);
+        }
+        .portfolio-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+        .portfolio-card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+        .portfolio-body { padding: 1.5rem; }
+        .portfolio-tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+        .portfolio-body h3 { margin: 0.5rem 0; font-family: 'Space Grotesk', sans-serif; }
+        .portfolio-body p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* Team */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+        .team-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg); overflow: hidden;
+            text-align: center; transition: all 0.35s; box-shadow: var(--shadow-sm);
+        }
+        .team-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+        .team-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        .team-body { padding: 1.25rem; }
+        .team-body h3 { font-family: 'Space Grotesk', sans-serif; margin-bottom: 0.25rem; }
+        .team-role { color: var(--accent); font-size: 0.85rem; font-weight: 500; }
+
+        /* Testimonials */
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .testimonial-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg); padding: 2rem;
+            transition: all 0.35s; box-shadow: var(--shadow-sm);
+        }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .testimonial-text { font-style: italic; color: var(--text-secondary); margin-bottom: 1.5rem; }
+        .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }
+        .author-avatar {
+            width: 44px; height: 44px; border-radius: 50%; background: var(--accent-glow);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--accent);
+        }
+
+        /* Contact */
+        .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+        .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+        .form-input {
+            background: var(--bg-card); border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius); padding: 0.9rem 1.2rem;
+            font-family: inherit; font-size: 0.95rem; color: var(--text-primary);
+            outline: none; transition: all 0.3s;
+        }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .form-input::placeholder { color: var(--text-muted); }
+        .contact-info { display: flex; flex-direction: column; gap: 1.25rem; }
+        .info-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-subtle); }
+        .info-item i { font-size: 1.5rem; color: var(--accent); }
+
+        /* Footer */
+        .footer { background: var(--footer-bg); padding: 4rem 0 2rem; border-top: 1px solid var(--border-subtle); }
+        .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; }
+        .footer-brand { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .footer-links h4 { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); }
+        .footer-links a { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.85rem; }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .about-inner, .contact-inner { grid-template-columns: 1fr; }
+            .footer-inner { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .footer-inner { grid-template-columns: 1fr; }
+            .about-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-brand">Nexus<span>Tech</span></a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#sobre">Sobre</a>
+                <a href="#portfolio">Portfólio</a>
+                <a href="#equipe">Equipe</a>
+                <a href="#contato">Contato</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-primary" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">
+                    <i class="bi bi-chat-dots-fill"></i> Fale Conosco
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="bi bi-sun-fill"></i>
+                </button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home">Home</a><a href="#servicos">Serviços</a><a href="#sobre">Sobre</a>
+            <a href="#portfolio">Portfólio</a><a href="#equipe">Equipe</a><a href="#contato">Contato</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <canvas class="hero-canvas" id="heroCanvas"></canvas>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="bi bi-rocket-takeoff-fill"></i> Inovação & Tecnologia
+            </div>
+            <h1 class="hero-title">Construímos o <em>futuro digital</em> do seu negócio</h1>
+            <p class="hero-subtitle">Desenvolvimento de software, inteligência artificial e soluções em nuvem para transformar ideias em resultados.</p>
+            <div class="hero-buttons">
+                <a href="#servicos" class="btn btn-primary"><i class="bi bi-grid-fill"></i> Nossos Serviços</a>
+                <a href="#portfolio" class="btn btn-outline"><i class="bi bi-folder-fill"></i> Ver Portfólio</a>
+            </div>
+        </div>
+        <div class="hero-scroll" onclick="document.getElementById('servicos').scrollIntoView({behavior:'smooth'})">
+            <span>Scroll</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+    </section>
+
+    <section class="section" id="servicos">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">O que fazemos</span>
+                <h2 class="section-title">Soluções <em>inteligentes</em></h2>
+                <p class="section-desc">Transformamos desafios em oportunidades com tecnologia de ponta.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-phone-fill"></i></div>
+                    <h3>Desenvolvimento Web & Mobile</h3>
+                    <p>Aplicativos nativos e plataformas web escaláveis com as tecnologias mais modernas do mercado.</p>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-robot"></i></div>
+                    <h3>Inteligência Artificial</h3>
+                    <p>Soluções de machine learning, chatbots e automação inteligente para otimizar processos.</p>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-cloud-fill"></i></div>
+                    <h3>Cloud Computing</h3>
+                    <p>Migração e gestão de infraestrutura em nuvem com alta disponibilidade e segurança.</p>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h3>Cibersegurança</h3>
+                    <p>Proteção de dados e sistemas com monitoramento 24/7 e protocolos avançados de segurança.</p>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                    <h3>Big Data & Analytics</h3>
+                    <p>Transforme dados em insights estratégicos com dashboards e relatórios personalizados.</p>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon"><i class="bi bi-palette-fill"></i></div>
+                    <h3>UI/UX Design</h3>
+                    <p>Experiências digitais que encantam usuários e aumentam a conversão do seu produto.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="sobre" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="about-inner">
+                <div class="about-image reveal">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80" alt="Equipe NexusTech" loading="lazy" />
+                </div>
+                <div class="reveal">
+                    <span class="section-label">Quem somos</span>
+                    <h2 class="section-title">Tecnologia com <em>propósito</em></h2>
+                    <p style="color: var(--text-secondary); margin: 1rem 0;">Fundada em 2018, a NexusTech já impactou mais de 200 empresas em 12 países, entregando soluções digitais que geram valor real. Nossa equipe é formada por especialistas apaixonados por inovação.</p>
+                    <div class="about-stats">
+                        <div class="stat-item"><div class="stat-number">200+</div><div class="stat-label">Projetos entregues</div></div>
+                        <div class="stat-item"><div class="stat-number">50+</div><div class="stat-label">Especialistas</div></div>
+                        <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label">Satisfação</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="portfolio">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Portfólio</span>
+                <h2 class="section-title">Projetos <em>recentes</em></h2>
+            </div>
+            <div class="portfolio-grid">
+                <div class="portfolio-card reveal">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80" alt="Dashboard" loading="lazy" />
+                    <div class="portfolio-body"><span class="portfolio-tag">Big Data</span><h3>Dashboard Analytics Pro</h3><p>Plataforma de BI para análise de dados em tempo real.</p></div>
+                </div>
+                <div class="portfolio-card reveal">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=500&q=80" alt="App Mobile" loading="lazy" />
+                    <div class="portfolio-body"><span class="portfolio-tag">Mobile</span><h3>FinTech App</h3><p>Aplicativo financeiro com mais de 1 milhão de downloads.</p></div>
+                </div>
+                <div class="portfolio-card reveal">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80" alt="IA" loading="lazy" />
+                    <div class="portfolio-body"><span class="portfolio-tag">IA</span><h3>Chatbot Inteligente</h3><p>Assistente virtual com NLP que reduziu custos em 40%.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="equipe" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Nossa Equipe</span>
+                <h2 class="section-title">Mentes <em>brilhantes</em></h2>
+            </div>
+            <div class="team-grid">
+                <div class="team-card reveal">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80" alt="CEO" loading="lazy" />
+                    <div class="team-body"><h3>André Silva</h3><div class="team-role">CEO & Fundador</div></div>
+                </div>
+                <div class="team-card reveal">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80" alt="CTO" loading="lazy" />
+                    <div class="team-body"><h3>Marina Costa</h3><div class="team-role">CTO</div></div>
+                </div>
+                <div class="team-card reveal">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Designer" loading="lazy" />
+                    <div class="team-body"><h3>Lucas Oliveira</h3><div class="team-role">Lead Designer</div></div>
+                </div>
+                <div class="team-card reveal">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="Dev" loading="lazy" />
+                    <div class="team-body"><h3>Rafael Santos</h3><div class="team-role">Senior Developer</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="depoimentos">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Depoimentos</span>
+                <h2 class="section-title">Quem confia <em>na gente</em></h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-text">"A NexusTech revolucionou nossa operação com o dashboard de BI. Agora tomamos decisões baseadas em dados reais."</p>
+                    <div class="testimonial-author"><div class="author-avatar">F</div><div><strong>Fernanda Lima</strong><br><small style="color:var(--text-muted)">CEO, DataCorp</small></div></div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-text">"O aplicativo que desenvolveram superou todas as expectativas. Design impecável e performance excepcional."</p>
+                    <div class="testimonial-author"><div class="author-avatar">C</div><div><strong>Carlos Mendes</strong><br><small style="color:var(--text-muted)">Diretor, InovaBank</small></div></div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-text">"Migraram nossa infraestrutura para a nuvem com zero downtime. Profissionalismo e competência do início ao fim."</p>
+                    <div class="testimonial-author"><div class="author-avatar">P</div><div><strong>Patrícia Souza</strong><br><small style="color:var(--text-muted)">CTO, HealthTech</small></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="contato" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Contato</span>
+                <h2 class="section-title">Vamos <em>conversar?</em></h2>
+            </div>
+            <div class="contact-inner">
+                <form class="contact-form reveal" id="contactForm">
+                    <input type="text" placeholder="Seu nome" class="form-input" required />
+                    <input type="email" placeholder="Seu e-mail" class="form-input" required />
+                    <select class="form-input" required>
+                        <option value="">Qual serviço você precisa?</option>
+                        <option>Desenvolvimento Web/Mobile</option>
+                        <option>Inteligência Artificial</option>
+                        <option>Cloud Computing</option>
+                        <option>Cibersegurança</option>
+                        <option>Big Data & Analytics</option>
+                        <option>UI/UX Design</option>
+                        <option>Outro</option>
+                    </select>
+                    <textarea placeholder="Descreva seu projeto" class="form-input" rows="4"></textarea>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill"></i> Enviar Mensagem</button>
+                </form>
+                <div class="contact-info reveal">
+                    <div class="info-item"><i class="bi bi-geo-alt-fill"></i><div><strong>Endereço</strong><br><span style="color:var(--text-secondary);font-size:0.9rem;">Av. Paulista, 1000 - São Paulo</span></div></div>
+                    <div class="info-item"><i class="bi bi-envelope-fill"></i><div><strong>E-mail</strong><br><span style="color:var(--text-secondary);font-size:0.9rem;">contato@nexustech.com.br</span></div></div>
+                    <div class="info-item"><i class="bi bi-telephone-fill"></i><div><strong>Telefone</strong><br><span style="color:var(--text-secondary);font-size:0.9rem;">(11) 3456-7890</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div>
+                    <div class="footer-brand">Nexus<span style="color:var(--accent);">Tech</span></div>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;">Transformando ideias em tecnologia desde 2018.</p>
+                </div>
+                <div class="footer-links"><h4>Serviços</h4><a href="#">Web/Mobile</a><a href="#">IA</a><a href="#">Cloud</a><a href="#">Segurança</a></div>
+                <div class="footer-links"><h4>Empresa</h4><a href="#">Sobre</a><a href="#">Carreira</a><a href="#">Blog</a><a href="#">Contato</a></div>
+                <div class="footer-links"><h4>Redes</h4><a href="#">LinkedIn</a><a href="#">Instagram</a><a href="#">GitHub</a><a href="#">YouTube</a></div>
+            </div>
+            <div class="footer-bottom">© 2025 NexusTech. Todos os direitos reservados.</div>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            const saved = localStorage.getItem('nexustech-theme') || 'light';
+            html.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
+
+            themeToggle.addEventListener('click', () => {
+                const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('nexustech-theme', next);
+                updateThemeIcon(next);
+                initParticles();
+            });
+
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'bi bi-moon-fill';
+                } else {
+                    themeIcon.className = 'bi bi-sun-fill';
+                }
+            }
+
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 50));
+
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+            mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+            document.querySelectorAll('a[href^="#"]').forEach(a => {
+                a.addEventListener('click', e => {
+                    const id = a.getAttribute('href');
+                    if (id === '#') return;
+                    const el = document.querySelector(id);
+                    if (el) { e.preventDefault();
+                        el.scrollIntoView({ behavior: 'smooth' }); }
+                });
+            });
+
+            const revealObserver = new IntersectionObserver(entries => {
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible');
+                        revealObserver.unobserve(e.target); } });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+            let particleAnimId;
+            const canvas = document.getElementById('heroCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                let w, h;
+
+                function resize() {
+                    const rect = canvas.parentElement.getBoundingClientRect();
+                    w = rect.width;
+                    h = rect.height;
+                    canvas.width = w * devicePixelRatio;
+                    canvas.height = h * devicePixelRatio;
+                    canvas.style.width = w + 'px';
+                    canvas.style.height = h + 'px';
+                    ctx.scale(devicePixelRatio, devicePixelRatio);
+                }
+
+                function create() {
+                    const isDark = html.getAttribute('data-theme') === 'dark';
+                    const count = 70;
+                    particles = [];
+                    for (let i = 0; i < count; i++) {
+                        particles.push({
+                            x: Math.random() * w,
+                            y: Math.random() * h,
+                            r: Math.random() * 3 + 1,
+                            vx: (Math.random() - 0.5) * 0.6,
+                            vy: (Math.random() - 0.5) * 0.6,
+                            color: isDark ? (Math.random() > 0.5 ? '#3399ff' : '#00ccff') : (Math.random() > 0.5 ?
+                                '#0066ff' : '#00d4ff'),
+                            alpha: Math.random() * 0.5 + 0.1,
+                        });
+                    }
+                }
+
+                function draw() {
+                    ctx.clearRect(0, 0, w, h);
+                    particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        if (p.x < 0) p.x = w;
+                        if (p.x > w) p.x = 0;
+                        if (p.y < 0) p.y = h;
+                        if (p.y > h) p.y = 0;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = p.alpha;
+                        ctx.fill();
+                    });
+                    ctx.globalAlpha = 1;
+                    // Connections
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 120) {
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.strokeStyle = particles[i].color;
+                                ctx.globalAlpha = 0.08 * (1 - dist / 120);
+                                ctx.lineWidth = 0.5;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    ctx.globalAlpha = 1;
+                    particleAnimId = requestAnimationFrame(draw);
+                }
+
+                function initParticles() {
+                    if (particleAnimId) cancelAnimationFrame(particleAnimId);
+                    resize();
+                    create();
+                    draw();
+                }
+                window.addEventListener('resize', initParticles);
+                initParticles();
+            }
+
+            document.getElementById('contactForm').addEventListener('submit', e => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const origHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Enviado!';
+                btn.disabled = true;
+                setTimeout(() => { btn.innerHTML = origHTML;
+                    btn.disabled = false;
+                    e.target.reset();
+                    alert('Mensagem enviada! Entraremos em contato em breve.'); }, 2000);
+            });
+        })();
+    </script>
+</body>
+</html>

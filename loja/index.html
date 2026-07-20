@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ModaVibe — Sua loja de estilo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <style>
+        :root {
+            --bg: #e11d48;
+            --bg-card: #ffffff;
+            --bg-alt: #be123c;
+            --accent: #ffffff;
+            --accent-light: #fce7f3;
+            --accent-dark: #fdf2f8;
+            --text-primary: #ffffff;
+            --text-secondary: #fce7f3;
+            --text-muted: #fdf2f8;
+            --border: rgba(255, 255, 255, 0.3);
+            --border-hover: #ffffff;
+            --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.35);
+            --radius: 14px;
+            --radius-lg: 22px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-alt); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        ::selection { background: var(--accent); color: var(--bg); }
+        a { color: inherit; text-decoration: none; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* ─── NAVBAR ─────────────────────────── */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            background: rgba(225, 29, 72, 0.92); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: box-shadow 0.3s;
+        }
+        .navbar.scrolled { box-shadow: var(--shadow-md); }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 66px; max-width: 1240px; margin: 0 auto; padding: 0 1.5rem;
+        }
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700; font-size: 1.7rem;
+            color: #ffffff; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .nav-brand i { font-size: 1.6rem; color: #ffffff; }
+        .nav-links { display: flex; gap: 0.2rem; }
+        .nav-links a {
+            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.88rem;
+            font-weight: 500; color: rgba(255, 255, 255, 0.85); transition: all 0.25s;
+        }
+        .nav-links a:hover { color: #ffffff; background: rgba(255, 255, 255, 0.15); }
+        .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+        .btn-icon {
+            width: 40px; height: 40px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9); background: none; border: none;
+            cursor: pointer; transition: all 0.25s; position: relative;
+        }
+        .btn-icon:hover { color: #ffffff; background: rgba(255, 255, 255, 0.2); }
+        .cart-count {
+            position: absolute; top: 2px; right: 2px;
+            background: #ffffff; color: #e11d48; font-size: 0.65rem;
+            width: 18px; height: 18px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: 700;
+        }
+        .hamburger { display: none; flex-direction: column; gap: 4px; background: none; border: none; padding: 8px; cursor: pointer; }
+        .hamburger span { width: 22px; height: 2px; background: #ffffff; border-radius: 2px; }
+        .mobile-menu { display: none; flex-direction: column; padding: 1rem; background: #be123c; border-top: 1px solid rgba(255,255,255,0.2); gap: 0.3rem; }
+        .mobile-menu a { padding: 0.6rem; border-radius: 8px; color: rgba(255,255,255,0.85); }
+        .mobile-menu.open { display: flex; }
+
+        /* ─── CARRINHO LATERAL ──────────────── */
+        .cart-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300;
+            opacity: 0; pointer-events: none; transition: opacity 0.35s;
+        }
+        .cart-overlay.open { opacity: 1; pointer-events: auto; }
+        .cart-drawer {
+            position: fixed; top: 0; right: 0; width: 400px; max-width: 90vw;
+            height: 100vh; background: #ffffff; z-index: 301; box-shadow: var(--shadow-lg);
+            transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column;
+        }
+        .cart-drawer.open { transform: translateX(0); }
+        .cart-header {
+            padding: 1.25rem; border-bottom: 1px solid #f0d5e0;
+            display: flex; justify-content: space-between; align-items: center;
+            color: #1f1f2e;
+        }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1rem; color: #1f1f2e; }
+        .cart-item {
+            display: flex; gap: 1rem; align-items: center; padding: 0.75rem 0;
+            border-bottom: 1px solid #f0d5e0; color: #1f1f2e;
+        }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; }
+        .cart-footer { padding: 1.25rem; border-top: 1px solid #f0d5e0; color: #1f1f2e; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.75rem 2rem; border-radius: 50px; font-weight: 600;
+            font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: none;
+        }
+        .btn-accent { background: #ffffff; color: #e11d48; width: 100%; }
+        .btn-accent:hover { background: #fce7f3; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-outline { background: transparent; border: 2px solid #ffffff; color: #ffffff; }
+        .btn-outline:hover { background: #ffffff; color: #e11d48; }
+
+        /* ─── HERO ────────────────────────────── */
+        .hero {
+            margin-top: 66px; min-height: 85vh; display: flex; align-items: center;
+            background: linear-gradient(135deg, #be123c 0%, #e11d48 40%, #f43f5e 100%);
+            position: relative; overflow: hidden; padding: 3rem 1.5rem;
+        }
+        .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; max-width: 1240px; margin: 0 auto; }
+        .hero-text { animation: fadeUp 1s ease 0.2s both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.2); padding: 0.4rem 1.2rem; border-radius: 50px;
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #ffffff; margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700;
+            line-height: 1.15; margin-bottom: 1rem; color: #ffffff;
+        }
+        .hero-title em { font-style: italic; color: #ffffff; }
+        .hero-sub { color: rgba(255, 255, 255, 0.9); font-size: 1.05rem; margin-bottom: 1.5rem; max-width: 450px; }
+        .hero-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .hero-image img { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: fadeUp 1s ease 0.4s both; }
+
+        /* ─── SEÇÕES ──────────────────────────── */
+        .section { padding: 5rem 0; }
+        .section-label {
+            display: inline-block; font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 700; margin-bottom: 0.75rem;
+            color: #ffffff;
+        }
+        .section-header { text-align: center; margin-bottom: 2.5rem; }
+
+        /* ─── CATEGORIAS ──────────────────────── */
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        .category-card {
+            background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-lg); padding: 1.5rem;
+            text-align: center; cursor: pointer; transition: all 0.35s;
+            border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: var(--shadow-sm);
+            color: #ffffff;
+        }
+        .category-card:hover {
+            border-color: #ffffff; transform: translateY(-5px);
+            box-shadow: var(--shadow-md); background: rgba(255, 255, 255, 0.25);
+        }
+        .category-icon {
+            font-size: 2.5rem; color: #ffffff; margin-bottom: 0.75rem;
+            transition: transform 0.3s;
+        }
+        .category-card:hover .category-icon { transform: scale(1.1); }
+        .category-card h3 { font-weight: 600; font-size: 0.95rem; color: #ffffff; }
+
+        /* ─── PRODUTOS ────────────────────────── */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .product-card {
+            background: #ffffff; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow-sm); transition: all 0.35s;
+            border: 2px solid transparent; position: relative; color: #1f1f2e;
+        }
+        .product-card:hover {
+            transform: translateY(-6px); box-shadow: var(--shadow-lg);
+            border-color: #ffffff;
+        }
+        .product-img-wrap { position: relative; overflow: hidden; }
+        .product-img-wrap img { width: 100%; aspect-ratio: 3/4; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .product-img-wrap img { transform: scale(1.08); }
+        .product-actions {
+            position: absolute; top: 10px; right: 10px; display: flex;
+            flex-direction: column; gap: 6px; opacity: 0; transform: translateX(10px);
+            transition: all 0.3s;
+        }
+        .product-card:hover .product-actions { opacity: 1; transform: translateX(0); }
+        .product-actions button {
+            width: 36px; height: 36px; border-radius: 50%; background: #ffffff;
+            border: none; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; color: #e11d48; font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.2s;
+        }
+        .product-actions button:hover { background: #e11d48; color: #ffffff; }
+        .product-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: #e11d48; color: #ffffff; padding: 0.25rem 0.8rem;
+            border-radius: 50px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+        }
+        .product-body { padding: 1rem; }
+        .product-body h3 { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; color: #1f1f2e; }
+        .product-body .brand { font-size: 0.78rem; color: #5a5a7a; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+        .product-price { font-weight: 700; font-size: 1.15rem; color: #e11d48; }
+        .product-price .old { text-decoration: line-through; color: #9a9aae; font-weight: 400; font-size: 0.85rem; margin-right: 6px; }
+        .product-rating { color: #f59e0b; font-size: 0.8rem; display: flex; align-items: center; gap: 0.15rem; }
+
+        /* ─── BANNER PROMO ────────────────────── */
+        .promo-banner {
+            background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255,255,255,0.3);
+            color: #ffffff; padding: 3rem 2rem; border-radius: var(--radius-lg);
+            text-align: center; margin: 3rem 0;
+        }
+        .promo-banner h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem; }
+        .promo-banner p { opacity: 0.95; margin-bottom: 1.5rem; }
+
+        /* ─── MARCAS ──────────────────────────── */
+        .brands-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; align-items: center; }
+        .brand-item { opacity: 0.6; font-size: 1.8rem; font-weight: 700; color: rgba(255, 255, 255, 0.7); transition: all 0.3s; cursor: default; }
+        .brand-item:hover { opacity: 1; color: #ffffff; transform: scale(1.08); }
+
+        /* ─── BLOG MINI ───────────────────────── */
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .blog-card {
+            background: #ffffff; border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow-sm); transition: all 0.35s; color: #1f1f2e;
+        }
+        .blog-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+        .blog-card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+        .blog-body { padding: 1rem 1.25rem 1.25rem; }
+        .blog-body h4 { font-weight: 600; margin-bottom: 0.5rem; color: #1f1f2e; }
+        .blog-body p { color: #5a5a7a; font-size: 0.85rem; }
+
+        /* ─── DEPOIMENTOS ─────────────────────── */
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .testimonial-card {
+            background: #ffffff; border-radius: var(--radius-lg); padding: 1.8rem;
+            box-shadow: var(--shadow-sm); transition: all 0.3s; color: #1f1f2e;
+        }
+        .testimonial-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+        .testimonial-card p { color: #5a5a7a; font-style: italic; margin-bottom: 1rem; }
+        .testimonial-author { display: flex; align-items: center; gap: 0.6rem; }
+        .author-avatar {
+            width: 36px; height: 36px; border-radius: 50%; background: #fce7f3;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #e11d48; font-size: 0.9rem;
+        }
+
+        /* ─── FAQ ─────────────────────────────── */
+        .faq-grid { max-width: 700px; margin: 0 auto; display: grid; gap: 0.75rem; }
+        .faq-item {
+            background: rgba(255, 255, 255, 0.15); border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.25); overflow: hidden; transition: all 0.3s;
+            color: #ffffff;
+        }
+        .faq-question {
+            padding: 1rem 1.25rem; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; font-weight: 600; font-size: 0.95rem;
+            user-select: none; transition: color 0.2s; color: #ffffff;
+        }
+        .faq-question:hover { background: rgba(255,255,255,0.1); }
+        .faq-question i { transition: transform 0.3s; color: #ffffff; }
+        .faq-item.active .faq-question i { transform: rotate(180deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; padding: 0 1.25rem; color: rgba(255,255,255,0.9); font-size: 0.85rem; }
+        .faq-item.active .faq-answer { max-height: 200px; padding: 0 1.25rem 1rem; }
+
+        /* ─── NEWSLETTER ──────────────────────── */
+        .newsletter {
+            background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255,255,255,0.25);
+            padding: 3rem 2rem; border-radius: var(--radius-lg); text-align: center;
+            color: #ffffff;
+        }
+        .newsletter-form { display: flex; max-width: 480px; margin: 1.5rem auto 0; gap: 0; }
+        .newsletter-form input {
+            flex: 1; padding: 0.85rem 1.2rem; border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50px 0 0 50px; font-family: inherit; font-size: 0.9rem;
+            outline: none; transition: border-color 0.3s; background: rgba(255,255,255,0.1);
+            color: #ffffff;
+        }
+        .newsletter-form input::placeholder { color: rgba(255,255,255,0.6); }
+        .newsletter-form input:focus { border-color: #ffffff; }
+        .newsletter-form button {
+            background: #ffffff; color: #e11d48; border: none; padding: 0.85rem 1.5rem;
+            border-radius: 0 50px 50px 0; font-weight: 600; cursor: pointer;
+            transition: background 0.3s;
+        }
+        .newsletter-form button:hover { background: #fce7f3; }
+
+        /* ─── FOOTER ──────────────────────────── */
+        .footer { background: #9f1239; color: rgba(255,255,255,0.85); padding: 4rem 0 1.5rem; }
+        .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 2rem; }
+        .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: #ffffff; }
+        .footer-links h4 { color: #ffffff; font-size: 0.85rem; margin-bottom: 0.75rem; font-weight: 600; }
+        .footer-links a { display: block; color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.4rem; transition: color 0.2s; }
+        .footer-links a:hover { color: #ffffff; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1.5rem; text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+        .footer-social { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .footer-social a {
+            width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; font-size: 1rem; transition: all 0.25s;
+        }
+        .footer-social a:hover { background: #ffffff; color: #e11d48; transform: translateY(-2px); }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; }
+            .hero-image { order: -1; }
+            .hero-sub { margin: 0 auto 1.5rem; }
+            .hero-buttons { justify-content: center; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .footer-inner { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .footer-inner { grid-template-columns: 1fr; }
+            .cart-drawer { width: 100vw; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ─── NAVBAR ──────────────────────────── -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-brand"><i class="bi bi-heart-fill"></i> ModaVibe</a>
+            <div class="nav-links" id="navLinks">
+                <a href="#home">Home</a><a href="#categorias">Categorias</a><a href="#produtos">Produtos</a>
+                <a href="#ofertas">Ofertas</a><a href="#blog">Blog</a><a href="#faq">FAQ</a><a href="#contato">Contato</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-icon" id="btnSearch" aria-label="Buscar"><i class="bi bi-search"></i></button>
+                <button class="btn-icon" id="btnCart" aria-label="Carrinho">
+                    <i class="bi bi-bag"></i><span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#home">Home</a><a href="#categorias">Categorias</a><a href="#produtos">Produtos</a>
+            <a href="#ofertas">Ofertas</a><a href="#blog">Blog</a><a href="#faq">FAQ</a><a href="#contato">Contato</a>
+        </div>
+    </nav>
+
+    <!-- ─── CARRINHO LATERAL ────────────────── -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3 style="font-family:'Playfair Display',serif;">Meu Carrinho</h3>
+            <button class="btn-icon" id="btnCloseCart" style="color:#1f1f2e;"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p style="color:#9a9aae;text-align:center;padding:2rem;">Seu carrinho está vazio.</p>
+        </div>
+        <div class="cart-footer">
+            <p style="display:flex;justify-content:space-between;margin-bottom:0.75rem;"><strong>Total:</strong> <strong id="cartTotal" style="color:#e11d48;">R$ 0,00</strong></p>
+            <button class="btn btn-accent">Finalizar Compra</button>
+        </div>
+    </aside>
+
+    <!-- ─── HERO ─────────────────────────────── -->
+    <section class="hero" id="home">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <div class="hero-badge"><i class="bi bi-sparkles"></i> Nova Coleção 2025</div>
+                <h1 class="hero-title">Vista sua <em>melhor</em> versão</h1>
+                <p class="hero-sub">Descubra peças exclusivas que unem conforto, estilo e personalidade para todas as ocasiões.</p>
+                <div class="hero-buttons">
+                    <a href="#produtos" class="btn btn-accent" style="color:#e11d48;"><i class="bi bi-bag-fill"></i> Comprar Agora</a>
+                    <a href="#categorias" class="btn btn-outline"><i class="bi bi-grid-fill"></i> Ver Categorias</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80" alt="Coleção ModaVibe" loading="eager" />
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CATEGORIAS ───────────────────────── -->
+    <section class="section" id="categorias">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Navegue por</span>
+                <h2 class="section-title">Categorias</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card reveal" data-category="feminino">
+                    <div class="category-icon"><i class="bi bi-gender-female"></i></div>
+                    <h3>Feminino</h3>
+                </div>
+                <div class="category-card reveal" data-category="masculino">
+                    <div class="category-icon"><i class="bi bi-gender-male"></i></div>
+                    <h3>Masculino</h3>
+                </div>
+                <div class="category-card reveal" data-category="infantil">
+                    <div class="category-icon"><i class="bi bi-emoji-smile"></i></div>
+                    <h3>Infantil</h3>
+                </div>
+                <div class="category-card reveal" data-category="acessorios">
+                    <div class="category-icon"><i class="bi bi-sunglasses"></i></div>
+                    <h3>Acessórios</h3>
+                </div>
+                <div class="category-card reveal" data-category="calcados">
+                    <div class="category-icon"><i class="bi bi-boot"></i></div>
+                    <h3>Calçados</h3>
+                </div>
+                <div class="category-card reveal" data-category="esportivo">
+                    <div class="category-icon"><i class="bi bi-bicycle"></i></div>
+                    <h3>Esportivo</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── PRODUTOS ──────────────────────────── -->
+    <section class="section" id="produtos">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Mais vendidos</span>
+                <h2 class="section-title">Produtos em Destaque</h2>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── BANNER PROMOCIONAL ───────────────── -->
+    <div class="container reveal">
+        <div class="promo-banner" id="ofertas">
+            <h2>🔥 Até 40% OFF na Coleção Verão</h2>
+            <p>Use o cupom <strong>VIBE40</strong> e aproveite descontos incríveis em milhares de produtos.</p>
+            <a href="#produtos" class="btn btn-outline" style="border-color:#fff;color:#fff;">Ver Ofertas</a>
+        </div>
+    </div>
+
+    <!-- ─── MARCAS PARCEIRAS ─────────────────── -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Parceiros</span>
+                <h2 class="section-title">Marcas que confiam</h2>
+            </div>
+            <div class="brands-grid reveal">
+                <span class="brand-item">NIKE</span>
+                <span class="brand-item">ADIDAS</span>
+                <span class="brand-item">ZARA</span>
+                <span class="brand-item">RENNER</span>
+                <span class="brand-item">HERING</span>
+                <span class="brand-item">LEVIS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── BLOG MINI ─────────────────────────── -->
+    <section class="section" id="blog">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Dicas e Tendências</span>
+                <h2 class="section-title">Blog ModaVibe</h2>
+            </div>
+            <div class="blog-grid">
+                <div class="blog-card reveal">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80" alt="Tendências" loading="lazy" />
+                    <div class="blog-body"><h4>Tendências Outono 2025</h4><p>Confira as cores e estilos que vão dominar a estação.</p></div>
+                </div>
+                <div class="blog-card reveal">
+                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&q=80" alt="Looks" loading="lazy" />
+                    <div class="blog-body"><h4>Como montar looks casuais</h4><p>Dicas práticas para combinar peças do dia a dia.</p></div>
+                </div>
+                <div class="blog-card reveal">
+                    <img src="https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=500&q=80" alt="Sustentabilidade" loading="lazy" />
+                    <div class="blog-body"><h4>Moda sustentável</h4><p>Marcas que estão fazendo a diferença no planeta.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── DEPOIMENTOS ──────────────────────── -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Clientes felizes</span>
+                <h2 class="section-title">Depoimentos</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal">
+                    <p>"A qualidade das roupas é incrível! Entrega super rápida e atendimento nota 10."</p>
+                    <div class="testimonial-author"><div class="author-avatar">M</div><strong>Marina Costa</strong></div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p>"Comprei o vestido da coleção verão e amei. Vou comprar mais com certeza!"</p>
+                    <div class="testimonial-author"><div class="author-avatar">L</div><strong>Luciana Rocha</strong></div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p>"Achei o site muito fácil de navegar, os preços são justos e as roupas lindas."</p>
+                    <div class="testimonial-author"><div class="author-avatar">P</div><strong>Pedro Alves</strong></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FAQ ───────────────────────────────── -->
+    <section class="section" id="faq">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Dúvidas</span>
+                <h2 class="section-title">Perguntas Frequentes</h2>
+            </div>
+            <div class="faq-grid reveal">
+                <div class="faq-item"><div class="faq-question">Qual o prazo de entrega? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">O prazo varia de 3 a 10 dias úteis, dependendo da região. Você pode rastrear seu pedido pelo site.</div></div>
+                <div class="faq-item"><div class="faq-question">Como faço para trocar um produto? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Aceitamos trocas em até 30 dias após o recebimento. Basta entrar em contato com nosso SAC.</div></div>
+                <div class="faq-item"><div class="faq-question">Quais as formas de pagamento? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Aceitamos cartão de crédito, débito, Pix e boleto bancário. Parcelamento em até 10x sem juros.</div></div>
+                <div class="faq-item"><div class="faq-question">Vocês têm loja física? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Sim! Temos unidades em São Paulo e Rio de Janeiro. Confira os endereços no rodapé.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── NEWSLETTER ────────────────────────── -->
+    <section class="section" id="contato">
+        <div class="container">
+            <div class="newsletter reveal">
+                <span class="section-label">Fique por dentro</span>
+                <h2 class="section-title" style="font-size:1.8rem;">Receba ofertas exclusivas</h2>
+                <p style="color:rgba(255,255,255,0.9);">Cadastre-se e ganhe 10% de desconto na primeira compra.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Seu melhor e-mail" required />
+                    <button type="submit">Inscrever</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FOOTER ────────────────────────────── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div>
+                    <div class="footer-brand"><i class="bi bi-heart-fill" style="color:#fff;"></i> ModaVibe</div>
+                    <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Sua loja de moda favorita desde 2018.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-tiktok"></i></a>
+                        <a href="#"><i class="bi bi-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links"><h4>Loja</h4><a href="#">Feminino</a><a href="#">Masculino</a><a href="#">Infantil</a><a href="#">Acessórios</a></div>
+                <div class="footer-links"><h4>Ajuda</h4><a href="#">Meus Pedidos</a><a href="#">Trocas</a><a href="#">Frete</a><a href="#">Contato</a></div>
+                <div class="footer-links"><h4>Institucional</h4><a href="#">Sobre nós</a><a href="#">Carreira</a><a href="#">Imprensa</a><a href="#">Privacidade</a></div>
+            </div>
+            <div class="footer-bottom">© 2025 ModaVibe. Todos os direitos reservados. | Feito com <i class="bi bi-heart-fill" style="color:#fff;"></i></div>
+        </div>
+    </footer>
+
+    <script>
+        class ModaVibeApp {
+            constructor(config) {
+                this.navbar = document.getElementById(config.navbarId);
+                this.hamburger = document.getElementById(config.hamburgerId);
+                this.mobileMenu = document.getElementById(config.mobileMenuId);
+                this.productsGrid = document.getElementById(config.productsGridId);
+                this.cartOverlay = document.getElementById(config.cartOverlayId);
+                this.cartDrawer = document.getElementById(config.cartDrawerId);
+                this.cartItemsEl = document.getElementById(config.cartItemsId);
+                this.cartCountEl = document.getElementById(config.cartCountId);
+                this.cartTotalEl = document.getElementById(config.cartTotalId);
+                this.btnCart = document.getElementById(config.btnCartId);
+                this.btnCloseCart = document.getElementById(config.btnCloseCartId);
+                this.newsletterForm = document.getElementById(config.newsletterFormId);
+                this.products = [
+                    { id:1, name:'Vestido Floral Midi', price:189.90, image:'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80', brand:'ModaVibe', badge:'Lançamento', rating:4.9 },
+                    { id:2, name:'Jaqueta Jeans Premium', price:249.90, oldPrice:329.90, image:'https://images.unsplash.com/photo-1544642899-f0d6e5f6ed6f?w=400&q=80', brand:'DenimCo', badge:'-25%', rating:4.7 },
+                    { id:3, name:'Camiseta Básica Algodão', price:79.90, image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80', brand:'Basic', rating:4.8 },
+                    { id:4, name:'Calça Pantalona Linho', price:199.90, image:'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&q=80', brand:'ModaVibe', rating:4.6 },
+                    { id:5, name:'Blusa Cropped Tricot', price:129.90, image:'https://images.unsplash.com/photo-1434389677669-e08b4cda3a40?w=400&q=80', brand:'TricotArt', rating:4.5 },
+                    { id:6, name:'Tênis Casual Urbano', price:299.90, oldPrice:399.90, image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80', brand:'StreetStep', badge:'-25%', rating:4.9 },
+                    { id:7, name:'Óculos de Sol Vintage', price:159.90, image:'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=80', brand:'SunStyle', badge:'Exclusivo', rating:4.4 },
+                    { id:8, name:'Saia Midi Plissada', price:169.90, image:'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400&q=80', brand:'ModaVibe', rating:4.7 },
+                ];
+                this.cart = [];
+                this.init();
+            }
+            init() {
+                this.renderProducts();
+                this.bindNavbarScroll();
+                this.bindMobileMenu();
+                this.bindSmoothScroll();
+                this.bindRevealObserver();
+                this.bindCartToggle();
+                this.bindFaqAccordion();
+                this.bindNewsletterSubmit();
+                this.bindCategoryFilter();
+            }
+            bindNavbarScroll() {
+                window.addEventListener('scroll', () => { if (this.navbar) this.navbar.classList.toggle('scrolled', window.scrollY > 50); });
+            }
+            bindMobileMenu() {
+                this.hamburger?.addEventListener('click', () => this.mobileMenu?.classList.toggle('open'));
+                this.mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => this.mobileMenu?.classList.remove('open')));
+            }
+            bindSmoothScroll() {
+                document.querySelectorAll('a[href^="#"]').forEach(a => {
+                    a.addEventListener('click', (e) => {
+                        const id = a.getAttribute('href'); if (id === '#') return;
+                        const el = document.querySelector(id); if (el) { e.preventDefault();
+                            el.scrollIntoView({ behavior: 'smooth' });
+                            this.mobileMenu?.classList.remove('open'); }
+                    });
+                });
+            }
+            bindRevealObserver() {
+                const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible');
+                            obs.unobserve(e.target); } }); }, { threshold: 0.1 });
+                document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+            }
+            bindCartToggle() {
+                const open = () => { this.cartOverlay?.classList.add('open');
+                    this.cartDrawer?.classList.add('open'); };
+                const close = () => { this.cartOverlay?.classList.remove('open');
+                    this.cartDrawer?.classList.remove('open'); };
+                this.btnCart?.addEventListener('click', open);
+                this.btnCloseCart?.addEventListener('click', close);
+                this.cartOverlay?.addEventListener('click', close);
+            }
+            bindFaqAccordion() {
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    const q = item.querySelector('.faq-question');
+                    q?.addEventListener('click', () => {
+                        const was = item.classList.contains('active');
+                        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                        if (!was) item.classList.add('active');
+                    });
+                });
+            }
+            bindNewsletterSubmit() {
+                this.newsletterForm?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = this.newsletterForm?.querySelector('input');
+                    if (input) { alert(`Obrigado! ${input.value} cadastrado com sucesso.`);
+                        input.value = ''; }
+                });
+            }
+            bindCategoryFilter() {
+                document.querySelectorAll('.category-card[data-category]').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const cat = card.getAttribute('data-category');
+                        if (cat === 'feminino') this.renderProducts([1, 3, 4, 5, 8]);
+                        else if (cat === 'masculino') this.renderProducts([2, 6]);
+                        else if (cat === 'acessorios') this.renderProducts([7]);
+                        else this.renderProducts();
+                        document.getElementById('produtos')?.scrollIntoView({ behavior: 'smooth' });
+                    });
+                });
+            }
+            renderProducts(filterIds) {
+                if (!this.productsGrid) return;
+                const items = filterIds ? this.products.filter(p => filterIds.includes(p.id)) : this.products;
+                this.productsGrid.innerHTML = items.map(p => `
+                    <div class="product-card reveal">
+                        <div class="product-img-wrap">
+                            <img src="${p.image}" alt="${p.name}" loading="lazy" />
+                            <div class="product-actions">
+                                <button data-action="cart" data-id="${p.id}" title="Adicionar ao carrinho"><i class="bi bi-bag-plus"></i></button>
+                                <button data-action="wish" data-id="${p.id}" title="Favoritar"><i class="bi bi-heart"></i></button>
+                            </div>
+                            ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+                        </div>
+                        <div class="product-body">
+                            <span class="brand">${p.brand}</span>
+                            <h3>${p.name}</h3>
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    ${p.oldPrice ? `<span class="old">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
+                                    R$ ${p.price.toFixed(2)}
+                                </div>
+                                <div class="product-rating"><i class="bi bi-star-fill"></i> ${p.rating}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible');
+                            obs.unobserve(e.target); } }); }, { threshold: 0.1 });
+                this.productsGrid.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+                this.productsGrid.querySelectorAll('button[data-action="cart"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => { e.stopPropagation(); const id = parseInt(btn.getAttribute('data-id') || '0', 10);
+                        this.addToCart(id); });
+                });
+                this.productsGrid.querySelectorAll('button[data-action="wish"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => { e.stopPropagation();
+                        btn.querySelector('i')?.classList.toggle('bi-heart-fill');
+                        btn.querySelector('i')?.classList.toggle('bi-heart'); if (btn.querySelector('i')?.classList.contains('bi-heart-fill')) { btn.style.color = '#e11d48'; } else { btn.style.color = ''; } });
+                });
+            }
+            addToCart(productId) {
+                const existing = this.cart.find(c => c.id === productId);
+                if (existing) { existing.quantity++; } else { this.cart.push({ id: productId, quantity: 1 }); }
+                this.updateCartUI();
+                if (this.cartDrawer && !this.cartDrawer.classList.contains('open')) {
+                    this.cartOverlay?.classList.add('open');
+                    this.cartDrawer?.classList.add('open');
+                    setTimeout(() => { this.cartOverlay?.classList.remove('open');
+                        this.cartDrawer?.classList.remove('open'); }, 1500);
+                }
+            }
+            updateCartUI() {
+                if (!this.cartItemsEl || !this.cartCountEl || !this.cartTotalEl) return;
+                const totalItems = this.cart.reduce((sum, c) => sum + c.quantity, 0);
+                this.cartCountEl.textContent = totalItems.toString();
+                if (this.cart.length === 0) {
+                    this.cartItemsEl.innerHTML = '<p style="color:#9a9aae;text-align:center;padding:2rem;">Seu carrinho está vazio.</p>';
+                    this.cartTotalEl.textContent = 'R$ 0,00'; return;
+                }
+                const total = this.cart.reduce((sum, c) => { const prod = this.products.find(p => p.id === c.id); return sum + (prod ? prod.price * c.quantity : 0); }, 0);
+                this.cartTotalEl.textContent = `R$ ${total.toFixed(2)}`;
+                this.cartItemsEl.innerHTML = this.cart.map(c => {
+                    const prod = this.products.find(p => p.id === c.id); if (!prod) return '';
+                    return `
+                        <div class="cart-item">
+                            <img src="${prod.image}" alt="${prod.name}" />
+                            <div style="flex:1;"><strong style="font-size:0.9rem;">${prod.name}</strong><p style="font-size:0.8rem;color:#9a9aae;">Qtd: ${c.quantity}</p></div>
+                            <strong style="color:#e11d48;">R$ ${(prod.price * c.quantity).toFixed(2)}</strong>
+                            <button class="btn-icon" style="font-size:0.9rem;color:#1f1f2e;" data-remove="${c.id}"><i class="bi bi-trash"></i></button>
+                        </div>
+                    `;
+                }).join('');
+                this.cartItemsEl.querySelectorAll('button[data-remove]').forEach(btn => {
+                    btn.addEventListener('click', () => { const id = parseInt(btn.getAttribute('data-remove') || '0', 10);
+                        this.cart = this.cart.filter(c => c.id !== id);
+                        this.updateCartUI(); });
+                });
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            new ModaVibeApp({ navbarId:'navbar', hamburgerId:'hamburger', mobileMenuId:'mobileMenu', productsGridId:'productsGrid', cartOverlayId:'cartOverlay', cartDrawerId:'cartDrawer', cartItemsId:'cartItems', cartCountId:'cartCount', cartTotalId:'cartTotal', btnCartId:'btnCart', btnCloseCartId:'btnCloseCart', newsletterFormId:'newsletterForm' });
+        });
+    </script>
+</body>
+</html>

@@ -1,1 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE — Modelos de Sites</title>
+    <meta name="description" content="Galeria de modelos de sites desenvolvidos pela SPACE.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" type="image/x-icon" href="images/spacelogo.png">
+    <style>
+        :root {
+            --white: #000000;
+            --black: #FFFFFF;
+            --font: 'Space Grotesk', 'Inter', 'Helvetica Neue', sans-serif;
+            --fs-hero: clamp(3rem, 7vw, 6rem);
+            --fs-h2: clamp(1.6rem, 3.5vw, 2.8rem);
+            --fs-body: clamp(0.9rem, 1.4vw, 1.05rem);
+            --fs-small: clamp(0.7rem, 1vw, 0.85rem);
+            --spacing-xs: clamp(0.4rem, 0.8vw, 0.6rem);
+            --spacing-sm: clamp(0.8rem, 1.5vw, 1.2rem);
+            --spacing-md: clamp(1.5rem, 3vw, 2.5rem);
+            --spacing-lg: clamp(2.5rem, 5vw, 5rem);
+            --spacing-xl: clamp(4rem, 8vw, 9rem);
+            --max-width: 1200px;
+            --border-thin: 1px solid var(--black);
+            --transition-med: 350ms cubic-bezier(.4, 0, .2, 1);
+            --radius-md: 8px;
+            --radius-sm: 4px;
+        }
 
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 16px;
+            background: #000;
+            color: var(--black);
+            scrollbar-width: thin;
+            scrollbar-color: #FFFFFF #000000;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFFFFF;
+            border-radius: 4px;
+            border: 2px solid #000000;
+        }
+
+        body {
+            font-family: var(--font);
+            font-weight: 400;
+            line-height: 1.6;
+            background: transparent;
+            color: var(--black);
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+        }
+
+        #starCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background: #000;
+        }
+
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            border: 1.5px solid var(--black);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.2s, height 0.2s, background 0.2s;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+        }
+        .cursor.dot {
+            width: 8px;
+            height: 8px;
+            background: var(--black);
+            border: none;
+        }
+        @media (max-width: 768px) {
+            .cursor { display: none; }
+        }
+
+        a, button { cursor: none; }
+        @media (max-width: 768px) {
+            a, button { cursor: auto; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .header {
+            padding: var(--spacing-lg) 0 var(--spacing-md);
+            text-align: center;
+            border-bottom: var(--border-thin);
+        }
+        .logo {
+            font-size: var(--fs-hero);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            text-decoration: none;
+            color: var(--black);
+        }
+        .subtitle {
+            font-size: var(--fs-body);
+            opacity: 0.55;
+            margin-top: var(--spacing-xs);
+        }
+
+        .gallery {
+            padding: var(--spacing-xl) 0;
+        }
+        .modelos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: var(--spacing-md);
+        }
+        .modelo-card {
+            border: var(--border-thin);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all var(--transition-med);
+            background: var(--white);
+            color: var(--black);
+        }
+        .modelo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 36px rgba(255, 255, 255, 0.1);
+        }
+        .modelo-img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #070707;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .modelo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .modelo-card:hover .modelo-img img {
+            opacity: 1;
+            transform: scale(1.03);
+        }
+        .modelo-info {
+            padding: var(--spacing-sm);
+        }
+        .modelo-info h3 {
+            font-weight: 600;
+            font-size: var(--fs-body);
+            margin-bottom: 4px;
+        }
+        .modelo-info p {
+            font-size: var(--fs-small);
+            opacity: 0.65;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.7rem 1.5rem;
+            font-family: var(--font);
+            font-size: var(--fs-small);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-med);
+            text-decoration: none;
+            border: var(--border-thin);
+            white-space: nowrap;
+            background: var(--black);
+            color: var(--white);
+            width: 100%;
+        }
+        .btn:hover {
+            background: var(--white);
+            color: var(--black);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.12);
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: var(--spacing-lg) 0;
+            font-size: var(--fs-small);
+            opacity: 0.4;
+            border-top: var(--border-thin);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starCanvas"></canvas>
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo">SPACE</a>
+            <p class="subtitle">Modelos de sites prontos para inspirar seu projeto</p>
+        </div>
+    </header>
+
+    <main class="gallery">
+        <div class="container">
+            <div class="modelos-grid">
+                <!-- 01 - Restaurante -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/restaurante.png" alt="Site para Restaurante">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Restaurante</h3>
+                        <p>Modelo elegante para restaurantes e bares.</p>
+                        <a href="./restaurante/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 02 - Academia -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/academia.png" alt="Site para Academia">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Academia</h3>
+                        <p>Modelo dinâmico para academias e estúdios fitness.</p>
+                        <a href="./academia/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 03 - Clínica -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/clinica.png" alt="Site para Clínica">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Clínica</h3>
+                        <p>Modelo clean para clínicas e consultórios.</p>
+                        <a href="./clinica/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 04 - Escritório -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/escritorio.png" alt="Site para Escritório">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Escritório</h3>
+                        <p>Modelo corporativo para escritórios de contabilidade e advocacia.</p>
+                        <a href="./escritorio/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 05 - Barbearia -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/barbearia.png" alt="Site para Barbearia">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Barbearia</h3>
+                        <p>Modelo estiloso para barbearias modernas.</p>
+                        <a href="./barbearia/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 06 - Advogado -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/advogado.png" alt="Site para Advogado">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Advogado</h3>
+                        <p>Modelo sóbrio para escritórios de advocacia.</p>
+                        <a href="./advogado/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 07 - Igreja -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/igreja.png" alt="Site para Igreja">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Igreja</h3>
+                        <p>Modelo acolhedor para comunidades religiosas.</p>
+                        <a href="./igreja/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 08 - Escola -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/escola.png" alt="Site para Escola">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Escola</h3>
+                        <p>Modelo completo para instituições de ensino.</p>
+                        <a href="./escola/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 09 - Empresa de Tecnologia -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/empresa.png" alt="Site para Empresa de Tecnologia">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Site para Empresa de Tecnologia</h3>
+                        <p>Modelo moderno para startups e empresas de TI.</p>
+                        <a href="./empresa/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 10 - Landing Page -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/landing.png" alt="Landing Page">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Landing Page</h3>
+                        <p>Modelo de alta conversão para campanhas.</p>
+                        <a href="./landing/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 11 - Loja Virtual -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/loja.png" alt="Loja Virtual">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Loja Virtual</h3>
+                        <p>Modelo de e-commerce otimizado para vendas.</p>
+                        <a href="./loja/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 12 - Dashboard Administrativo -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/admin.png" alt="Dashboard Administrativo">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Dashboard Administrativo</h3>
+                        <p>Modelo completo para painéis de controle.</p>
+                        <a href="./admin/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 13 - Sistema de Agendamentos -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/agendamentos.png" alt="Sistema de Agendamentos">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Sistema de Agendamentos</h3>
+                        <p>Modelo funcional para gerenciar horários.</p>
+                        <a href="./agendamentos/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 14 - Portfólio Pessoal -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/portifolio.png" alt="Portfólio Pessoal">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Portfólio Pessoal</h3>
+                        <p>Modelo criativo para mostrar seus trabalhos.</p>
+                        <a href="./portifolio/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- 15 - Sistema Empresarial -->
+                <div class="modelo-card">
+                    <div class="modelo-img">
+                        <img src="images/sistema.png" alt="Sistema Empresarial">
+                    </div>
+                    <div class="modelo-info">
+                        <h3>Sistema Empresarial</h3>
+                        <p>Modelo robusto para gestão corporativa.</p>
+                        <a href="./sistema/index.html" target="_blank" class="btn">Abrir modelo <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-note">
+        <div class="container">
+            <p>&copy; SPACE — Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============ INTERACTIVE STARFIELD ============
+        class InteractiveStarfield {
+            constructor() {
+                this.canvas = document.getElementById('starCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.stars = [];
+                this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+                this.targetMouse = { x: this.mouse.x, y: this.mouse.y };
+                this.animationId = 0;
+                this.STAR_COUNT = 200;
+                this.resize();
+                this.createStars();
+                window.addEventListener('resize', this.resize.bind(this));
+                window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                this.animate();
+            }
+            resize() {
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = window.innerWidth * dpr;
+                this.canvas.height = window.innerHeight * dpr;
+                this.canvas.style.width = window.innerWidth + 'px';
+                this.canvas.style.height = window.innerHeight + 'px';
+                this.ctx.scale(dpr, dpr);
+            }
+            onMouseMove(e) { this.targetMouse.x = e.clientX; this.targetMouse.y = e.clientY; }
+            createStars() {
+                this.stars = [];
+                for (let i = 0; i < this.STAR_COUNT; i++) {
+                    this.stars.push({
+                        baseX: Math.random() * window.innerWidth,
+                        baseY: Math.random() * window.innerHeight,
+                        radius: Math.random() * 1.8 + 0.3,
+                        phase: Math.random() * Math.PI * 2,
+                        speed: 0.02 + Math.random() * 0.04,
+                        influence: 0.005 + Math.random() * 0.03
+                    });
+                }
+            }
+            animate() {
+                this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
+                this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+                this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                const now = performance.now() * 0.001;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                this.stars.forEach(star => {
+                    const dx = this.mouse.x - width / 2;
+                    const dy = this.mouse.y - height / 2;
+                    const offsetX = dx * star.influence;
+                    const offsetY = dy * star.influence;
+                    const currentX = star.baseX + offsetX;
+                    const currentY = star.baseY + offsetY;
+                    const twinkle = 0.4 + 0.6 * Math.sin(now * star.speed * 8 + star.phase);
+                    const alpha = 0.25 + twinkle * 0.75;
+                    this.ctx.beginPath();
+                    this.ctx.arc(currentX, currentY, star.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                    this.ctx.fill();
+                });
+                this.animationId = requestAnimationFrame(this.animate.bind(this));
+            }
+        }
+        if (document.getElementById('starCanvas')) new InteractiveStarfield();
+
+        // ============ CURSOR ============
+        const cursor = document.getElementById('cursor');
+        if (cursor && window.matchMedia('(min-width: 769px)').matches) {
+            let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+            document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+            const interactiveSelectors = 'a, button, .btn, .modelo-card';
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.closest(interactiveSelectors)) cursor.classList.add('dot');
+                else cursor.classList.remove('dot');
+            });
+            document.addEventListener('mouseout', () => cursor.classList.remove('dot'));
+            function animateCursor() {
+                const dx = mouseX - cursorX, dy = mouseY - cursorY;
+                cursorX += dx * 0.18; cursorY += dy * 0.18;
+                cursor.style.left = cursorX + 'px'; cursor.style.top = cursorY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            requestAnimationFrame(animateCursor);
+        }
+    </script>
+</body>
+</html>
